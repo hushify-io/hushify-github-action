@@ -1,10 +1,10 @@
-# Hushify – GitHub Action
+# Hushify.io – GitHub Action
 
 Securely fetch a **one-time secret** from [hushify.io](https://www.hushify.io) in your GitHub Actions workflows.
 
 Supports:
--  Full hushify URL
--  Raw hushify token
+- Full hushify URL
+- Raw hushify token
 
 ---
 
@@ -13,7 +13,7 @@ Supports:
 ### Basic example
 
 ```yaml
-- uses: uses: hushify-io/hushify-github-action@v1
+- uses: hushify-io/hushify-github-action@v1
   id: hush
   with:
     hushify: ExampleTokenbrMscBHrE20rnmL0nZ
@@ -21,3 +21,4 @@ Supports:
 - run: |
     echo "Using secret"
     ./deploy.sh --token "${{ steps.hush.outputs.secret }}"
+```
