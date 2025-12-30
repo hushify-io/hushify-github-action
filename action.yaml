@@ -35,7 +35,7 @@ runs:
         fi
 
         SECRET=$(curl -fsSL \
-          -H "User-Agent: hushify-github-action/1.0" \
+          -H "User-Agent: hushify-github-action/1.1" \
           "$HUSHIFY_URL")
 
         if [ -z "$SECRET" ]; then

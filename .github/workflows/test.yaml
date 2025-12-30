@@ -1,9 +1,3 @@
-
----
-
-## 4️⃣ Test workflow (`.github/workflows/test.yml`)
-
-```yaml
 name: Test Hushify Action
 on:
   workflow_dispatch:
@@ -16,10 +10,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: hushify-io/hushify-github-action@v1
+      - uses: hushify-io/hushify-github-action@v1.1
         id: hush
         with:
           hushify: ${{ inputs.hushify }}
 
       - run: |
           echo "Secret retrieved (masked)"
+          echo "${{ steps.hush.outputs.secret }}"

@@ -13,7 +13,7 @@ Supports:
 ### Basic example
 
 ```yaml
-- uses: hushify-io/hushify-github-action@v1
+- uses: hushify-io/hushify-github-action@v1.1
   id: hush
   with:
     hushify: ExampleTokenbrMscBHrE20rnmL0nZ
