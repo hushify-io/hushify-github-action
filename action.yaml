@@ -34,8 +34,6 @@ runs:
           HUSHIFY_URL="https://www.hushify.io?token=$INPUT"
         fi
 
-        echo "🔐 Fetching secret from hushify.io"
-
         SECRET=$(curl -fsSL \
           -H "User-Agent: hushify-github-action/1.0" \
           "$HUSHIFY_URL")
