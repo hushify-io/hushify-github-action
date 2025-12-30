@@ -1,0 +1,49 @@
+name: "Hushify – Fetch Secret"
+description: "Retrieve a one-time secret from hushify.io using a token or URL"
+author: "hushify.io"
+
+branding:
+  icon: lock
+  color: purple
+
+inputs:
+  hushify:
+    description: "Hushify secret token OR full URL"
+    required: true
+
+outputs:
+  secret:
+    description: "The retrieved secret value"
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        set -euo pipefail
+
+        INPUT="${{ inputs.hushify }}"
+
+        if [[ "$INPUT" =~ ^https?:// ]]; then
+          HUSHIFY_URL="$INPUT"
+        else
+          if [[ ! "$INPUT" =~ ^[A-Za-z0-9_-]{20,}$ ]]; then
+            echo "❌ Invalid hushify token format"
+            exit 1
+          fi
+          HUSHIFY_URL="https://www.hushify.io?token=$INPUT"
+        fi
+
+        echo "🔐 Fetching secret from hushify.io"
+
+        SECRET=$(curl -fsSL \
+          -H "User-Agent: hushify-github-action/1.0" \
+          "$HUSHIFY_URL")
+
+        if [ -z "$SECRET" ]; then
+          echo "❌ Secret is empty or already consumed"
+          exit 1
+        fi
+
+        echo "::add-mask::$SECRET"
+        echo "secret=$SECRET" >> "$GITHUB_OUTPUT"
