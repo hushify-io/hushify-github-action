@@ -1,4 +1,4 @@
-# Hushify – GitHub Action
+# Hushify.io – GitHub Action
 
 Securely fetch a **one-time secret** from [hushify.io](https://www.hushify.io) in your GitHub Actions workflows.
 
