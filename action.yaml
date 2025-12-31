@@ -26,21 +26,30 @@ runs:
 
         if [[ "$INPUT" =~ ^https?:// ]]; then
           # Extract token from URL if full URL provided
+          # Try multiple methods to extract token
+          TOKEN=""
+          
+          # Method 1: Try regex match for ?token=XXX
           if [[ "$INPUT" =~ \?token=([A-Za-z0-9_-]+) ]]; then
             TOKEN="${BASH_REMATCH[1]}"
-            HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$TOKEN"
+          # Method 2: Try regex match for /api/unwrap?token=XXX
           elif [[ "$INPUT" =~ /api/unwrap\?token=([A-Za-z0-9_-]+) ]]; then
-            # Already using API endpoint
-            HUSHIFY_URL="$INPUT"
+            TOKEN="${BASH_REMATCH[1]}"
+          # Method 3: Use grep to extract token
           else
-            # Try to extract token from any URL format
             TOKEN=$(echo "$INPUT" | grep -oE '[?&]token=([A-Za-z0-9_-]+)' | cut -d= -f2 || echo "")
-            if [ -n "$TOKEN" ]; then
-              HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$TOKEN"
+          fi
+          
+          if [ -n "$TOKEN" ]; then
+            # Check if input is already API endpoint
+            if [[ "$INPUT" =~ /api/unwrap ]]; then
+              HUSHIFY_URL="$INPUT"
             else
-              echo "❌ Could not extract token from URL: $INPUT"
-              exit 1
+              HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$TOKEN"
             fi
+          else
+            echo "❌ Could not extract token from URL: $INPUT"
+            exit 1
           fi
         else
           if [[ ! "$INPUT" =~ ^[A-Za-z0-9_-]{20,}$ ]]; then
