@@ -1,6 +1,6 @@
 # Hushify.io – GitHub Action
 
-![CI](https://github.com/hushify-io/hushify-github-action/actions/workflows/test.yml/badge.svg)
+![CI](https://github.com/hushify-io/hushify-github-action/actions/workflows/test.yaml/badge.svg)
 
 Securely fetch a **one-time secret** from [hushify.io](https://www.hushify.io) in your GitHub Actions workflows.
 
