@@ -34,9 +34,30 @@ runs:
           HUSHIFY_URL="https://www.hushify.io?token=$INPUT"
         fi
 
-        SECRET=$(curl -fsSL \
+        HTTP_CODE=$(curl -sSLo /tmp/hushify_response \
+          -w "%{http_code}" \
           -H "User-Agent: hushify-github-action/1.1" \
-          "$HUSHIFY_URL")
+          "$HUSHIFY_URL" || echo "000")
+
+        if [ -z "$HTTP_CODE" ] || [ "$HTTP_CODE" = "000" ] || [ "$HTTP_CODE" -ne 200 ]; then
+          echo "❌ Failed to retrieve secret"
+          if [ -n "$HTTP_CODE" ] && [ "$HTTP_CODE" != "000" ]; then
+            echo "HTTP status: $HTTP_CODE"
+          else
+            echo "Network error or invalid response"
+          fi
+          if [ -f /tmp/hushify_response ]; then
+            RESPONSE=$(cat /tmp/hushify_response)
+            if [ -n "$RESPONSE" ]; then
+              echo "Response: $RESPONSE"
+            fi
+            rm -f /tmp/hushify_response
+          fi
+          exit 1
+        fi
+
+        SECRET=$(cat /tmp/hushify_response)
+        rm -f /tmp/hushify_response
 
         if [ -z "$SECRET" ]; then
           echo "❌ Secret is empty or already consumed"
