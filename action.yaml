@@ -34,7 +34,7 @@ runs:
             HUSHIFY_URL="$INPUT"
           else
             # Try to extract token from any URL format
-            TOKEN=$(echo "$INPUT" | grep -oE '[?&]token=([A-Za-z0-9_-]+)' | cut -d= -f2)
+            TOKEN=$(echo "$INPUT" | grep -oE '[?&]token=([A-Za-z0-9_-]+)' | cut -d= -f2 || echo "")
             if [ -n "$TOKEN" ]; then
               HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$TOKEN"
             else
@@ -50,6 +50,7 @@ runs:
           HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$INPUT"
         fi
 
+        echo "🔍 Fetching secret from: $HUSHIFY_URL"
         HTTP_CODE=$(curl -sSLo /tmp/hushify_response \
           -w "%{http_code}" \
           -H "User-Agent: hushify-github-action/1.1" \
@@ -80,5 +81,6 @@ runs:
           exit 1
         fi
 
+        echo "✅ Secret retrieved successfully"
         echo "::add-mask::$SECRET"
         echo "secret=$SECRET" >> "$GITHUB_OUTPUT"
