@@ -25,13 +25,29 @@ runs:
         INPUT="${{ inputs.hushify }}"
 
         if [[ "$INPUT" =~ ^https?:// ]]; then
-          HUSHIFY_URL="$INPUT"
+          # Extract token from URL if full URL provided
+          if [[ "$INPUT" =~ \?token=([A-Za-z0-9_-]+) ]]; then
+            TOKEN="${BASH_REMATCH[1]}"
+            HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$TOKEN"
+          elif [[ "$INPUT" =~ /api/unwrap\?token=([A-Za-z0-9_-]+) ]]; then
+            # Already using API endpoint
+            HUSHIFY_URL="$INPUT"
+          else
+            # Try to extract token from any URL format
+            TOKEN=$(echo "$INPUT" | grep -oE '[?&]token=([A-Za-z0-9_-]+)' | cut -d= -f2)
+            if [ -n "$TOKEN" ]; then
+              HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$TOKEN"
+            else
+              echo "❌ Could not extract token from URL: $INPUT"
+              exit 1
+            fi
+          fi
         else
           if [[ ! "$INPUT" =~ ^[A-Za-z0-9_-]{20,}$ ]]; then
             echo "❌ Invalid hushify token format"
             exit 1
           fi
-          HUSHIFY_URL="https://www.hushify.io?token=$INPUT"
+          HUSHIFY_URL="https://www.hushify.io/api/unwrap?token=$INPUT"
         fi
 
         HTTP_CODE=$(curl -sSLo /tmp/hushify_response \
